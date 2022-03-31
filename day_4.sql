@@ -50,17 +50,15 @@ GROUP BY A.gender;
 -- 부서별 가장 높은 개인 평균 연봉 값;
 
 -- 개인마다 평균 연봉 구함 > 개인을 부서로 조인 > 부서별로 그룹 묶음  > 가장 높은 평균연봉 값
-SELECT X.dept_no, MAX(Z.avg_salary) AS max_salary
+SELECT z.dept_no, MAX(Z.avg_salary) AS max_salary
 FROM (
-	SELECT A.emp_no, AVG(B.salary) AS avg_salary 
-	FROM employees A
-	INNER JOIN salaries B
+	SELECT B.dept_no, A.emp_no, AVG(A.salary) AS avg_salary
+	FROM salaries A
+	INNER JOIN dept_emp B
 	ON A.emp_no = B.emp_no
-	GROUP BY A.emp_no
+	GROUP BY B.emp_no
 ) Z
-INNER JOIN dept_emp X
-ON Z.emp_no = X.emp_no
-GROUP BY X.dept_no;
+GROUP BY Z.dept_no;
 
 -- 부서별 부서이름, 연봉 평균값, max값, min값 나오게 해주세요.
 SELECT B.dept_no, C.dept_name, AVG(A.salary), MAX(A.salary), MIN(A.salary)
@@ -70,20 +68,16 @@ ON A.emp_no = B.emp_no
 INNER JOIN departments C
 ON B.dept_no = C.dept_no
 GROUP BY B.dept_no, C.dept_name; -- mysql은 C.dept_name 생략가능 but 오라클은 불가능
-
-
-
--- 직무별 연봉 평균값
-SELECT A.title, AVG(B.salary) 
-FROM titles A
-INNER JOIN salaries B
+SELECT A.emp_no, AVG(A.salary), C.dept_name 
+FROM salaries A
+INNER JOIN dept_emp B
 ON A.emp_no = B.emp_no
-GROUP BY A.title;    
-   
-   
-   
-
-
+INNER JOIN departments C
+ON B.dept_no = C.dept_no
+GROUP BY A.emp_no
+ORDER BY AVG(A.salary) desc
+LIMIT 1;
+-- 전체 개인 평균 연봉 중에서 가장 높은 연봉 받는 사람의 부서 찾아내는거
 
 
 
